@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Pessoa, Diario
 from datetime import datetime, timedelta
+from collections import Counter
 
 # Create your views here.
 def home(request):
@@ -9,14 +10,25 @@ def home(request):
     pessoas = Pessoa.objects.all()
     nomes = [pessoa.nome for pessoa in pessoas]
     qtds = []
-
+    
+    dias = [diario.create_at.strftime('%d/%b/%Y') for diario in Diario.objects.all().order_by('create_at')]
+    print(dias)  # Teste para verificar saída correta
+    
     for pessoa in pessoas:
         qtd = Diario.objects.filter(pessoas = pessoa).count()
         qtds.append(qtd)
-    
 
+    # Contando a quantidade de textos por dia
+    contagem = Counter(dias)
 
-    return render(request, 'home.html', { 'textos' : textos, 'nomes':nomes, 'qtds': qtds } )
+    # Criando uma lista sem dias repetidos na ordem original
+    dias_unicos = list(contagem.keys())  # Lista de dias únicos ordenados
+    qtds_dias = [contagem[dia] for dia in dias_unicos]  # Lista de quantidades correspondentes
+
+    print(dias_unicos)  # Teste para verificar saída correta
+    print(qtds_dias)  # Teste para verificar saída correta
+
+    return render(request, 'home.html', { 'textos' : textos, 'nomes':nomes, 'qtds': qtds, 'dias': dias_unicos , 'qtds_dias': qtds_dias} )
 
 def escrever(request):
     if request.method == 'GET':
@@ -82,4 +94,4 @@ def excluir_dia(request):
     diarios = Diario.objects.filter(create_at__gte = dia).filter(create_at__lte = dia + timedelta(days=1))
     diarios.delete()
 
-    return HttpResponse('teste')
+    return redirect('home')

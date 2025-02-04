@@ -85,7 +85,7 @@
         </div>
         <div class="bg-gray-900 py-6">
             <div class="text-center">
-                <h1 class="text-balance text-2xl font-semibold tracking-tight text-slate-300 ">Seus dados.</h1>
+                <h1 class="text-balance text-2xl font-semibold tracking-tight text-slate-300 ">Seus dados:</h1>
             </div>
             <div class="grid grid-cols-2 gap-6 max-w-7xl mx-auto mt-12">
                 <div>
@@ -113,6 +113,26 @@
             },
         });
     </script>
+
     
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const ctx = document.getElementById('myChart2');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: {{dias|safe}},
+                        datasets: [{
+                            data: {{qtds_dias|safe}},
+                            borderWidth: 1
+                        }]
+                    },
+                });
+            } else {
+                console.error("Elemento myChart2 não encontrado.");
+            }
+        });
+    </script>
     
 {% endblock 'body' %}
